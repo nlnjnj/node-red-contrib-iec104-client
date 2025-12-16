@@ -1,0 +1,27 @@
+{
+	"name": "node-red-contrib-iec104-client",
+	"version": "1.0.0",
+	"description": "A Node-RED node that acts as an IEC 104 (master) client with patches for common types.",
+	"main": "iec104-client.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [
+		"node-red",
+		"iec104",
+		"scada",
+		"master",
+		"client",
+		"60870-5-104"
+	],
+	"author": "Max Lyubchenko",
+	"license": "Apache-2.0",
+	"node-red": {
+		"nodes": {
+			"iec104-client": "src/iec104-client.js"
+		}
+	},
+	"dependencies": {
+		"iec104-protocol": "^1.2.0"
+	}
+}

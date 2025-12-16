@@ -1,0 +1,127 @@
+<script type="text/javascript">
+	RED.nodes.registerType('iec104-client', {
+		category: 'network',
+		color: '#3498DB',
+		defaults: {
+			name: { value: '' },
+			host: { value: '127.0.0.1', required: true },
+			port: { value: 2404, required: true, validate: RED.validators.number() },
+			commonAddress: { value: 1, required: true, validate: RED.validators.number() },
+			allowSpontaneous: { value: true },
+			enableGeneralInterrogation: { value: true },
+			pollingInterval: {
+				value: 60,
+				validate: function (value) {
+					return value === '' || !isNaN(value);
+				},
+			},
+		},
+		inputs: 0,
+		outputs: 1,
+		icon: 'bridge.svg',
+		label: function () {
+			return this.name || 'iec104 ' + this.host + ':' + this.port;
+		},
+		oneditprepare: function () {},
+	});
+</script>
+
+<script type="text/html" data-template-name="iec104-client">
+	<div class="form-row">
+		<label for="node-input-host"><i class="fa fa-server"></i> Host</label>
+		<input type="text" id="node-input-host" placeholder="127.0.0.1" />
+	</div>
+	<div class="form-row">
+		<label for="node-input-port"><i class="fa fa-plug"></i> Port</label>
+		<input type="number" id="node-input-port" placeholder="2404" style="width: 100px;" />
+	</div>
+	<div class="form-row">
+		<label for="node-input-commonAddress"
+			><i class="fa fa-address-card-o"></i> Common Address (CA)</label
+		>
+		<input type="number" id="node-input-commonAddress" placeholder="1" style="width: 100px;" />
+	</div>
+	<div class="form-row">
+		<label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name" />
+	</div>
+	<div class="form-row">
+		<label for="node-input-allowSpontaneous"
+			><i class="fa fa-bolt"></i> Allow spontaneous data</label
+		>
+		<input
+			type="checkbox"
+			id="node-input-allowSpontaneous"
+			style="width: auto; margin-left: 10px;"
+		/>
+		<p class="form-tips">Коли вимкнено, спонтанні ASDUs ігноруються (але підтверджуються).</p>
+	</div>
+	<div class="form-row">
+		<label for="node-input-enableGeneralInterrogation"
+			><i class="fa fa-refresh"></i> General interrogation (COT 20)</label
+		>
+		<input
+			type="checkbox"
+			id="node-input-enableGeneralInterrogation"
+			style="width: auto; margin-left: 10px;"
+		/>
+		<p class="form-tips">Зніміть позначку, щоб відключити автоматичне опитування.</p>
+	</div>
+	<div class="form-row">
+		<label for="node-input-pollingInterval"
+			><i class="fa fa-clock-o"></i> Interrogation interval (s)</label
+		>
+		<input
+			type="number"
+			id="node-input-pollingInterval"
+			min="0"
+			placeholder="60"
+			style="width: 120px;"
+		/>
+		<p class="form-tips">0 = лише початкове опитування після встановлення зв'язку.</p>
+	</div>
+</script>
+
+<script type="text/html" data-help-name="iec104-client">
+	<p>A client (master) node for the IEC 60870-5-104 protocol.</p>
+	<p>
+		Ця нода підключається до сервера IEC 104 (Slave/RTU) та приймає дані. Вона автоматично надсилає
+		команду Загального опитування (General Interrogation, COT 6, QOI 20) після встановлення
+		з'єднання та коректно обробляє підтвердження потоку даних (S-Frames).
+	</p>
+	<h3>Configuration</h3>
+	<dl class="message-properties">
+		<dt>Host <span class="property-type">string</span></dt>
+		<dd>IP-адреса або ім'я хоста сервера IEC 104.</dd>
+		<dt>Port <span class="property-type">number</span></dt>
+		<dd>TCP-порт сервера (за замовчуванням: 2404).</dd>
+		<dt>Common Address (CA) <span class="property-type">number</span></dt>
+		<dd>Загальна адреса ASDU (Common Address), з якої очікуються дані (за замовчуванням: 1).</dd>
+		<dt>Allow spontaneous data <span class="property-type">boolean</span></dt>
+		<dd>
+			Disable this to ігнорувати спонтанні (COT=3) повідомлення і залишити тільки відповіді на
+			опитування.
+		</dd>
+		<dt>General interrogation (COT 20) <span class="property-type">boolean</span></dt>
+		<dd>Керує надсиланням запитів загального опитування після встановлення з'єднання.</dd>
+		<dt>Interrogation interval <span class="property-type">number</span></dt>
+		<dd>Період повторних опитувань у секундах. 0 означає лише початковий запит.</dd>
+	</dl>
+	<h3>Output</h3>
+	<dd>Загальна адреса ASDU (Common Address), з якої очікуються дані (за замовчуванням: 1).</dd>
+	<pre>
+{
+  "typeId": 30,
+  "cot": 3,
+  "ca": 1,
+  "objects": [
+    {
+      "ioa": 1,
+      "value": "true",
+      "quality": "[QualityDescriptor: ...]"
+    }
+  ]
+}
+    </pre
+	>
+</script>
