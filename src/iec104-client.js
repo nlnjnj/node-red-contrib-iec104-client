@@ -523,7 +523,7 @@ module.exports = function (RED) {
 			!connection.socket ||
 			typeof connection.receiveSequenceNumber === 'undefined'
 		) {
-			node.warn("Не можу надіслати S-Frame: з'єднання або лічильник не ініціалізовано.");
+			node.warn('Cannot send S-Frame: connection or counter not initialized.');
 			return;
 		}
 		const msg = new Uint8Array(6);
@@ -606,19 +606,19 @@ module.exports = function (RED) {
 		function sendGeneralInterrogation(reason) {
 			if (!node.connection) {
 				node.debug(
-					`Пропущено загальне опитування (${reason || 'unspecified'}): немає активного з'єднання.`
+					`Skipped general interrogation (${reason || 'unspecified'}): no active connection.`
 				);
 				return;
 			}
 			try {
-				node.log(`Загальне опитування (${reason || 'manual'}) для CA ${node.commonAddress}`);
+				node.log(`General interrogation (${reason || 'manual'}) for CA ${node.commonAddress}`);
 				node.connection.SendInterrogationCommand(
 					Lib.prototype.CauseOfTransmission.ACTIVATION,
 					node.commonAddress,
 					20
 				);
 			} catch (err) {
-				node.error(`Не вдалося виконати загальне опитування: ${err.message}`);
+				node.error(`Failed to perform general interrogation: ${err.message}`);
 			}
 		}
 
@@ -629,28 +629,28 @@ module.exports = function (RED) {
 			switch (event) {
 				case Lib.prototype.ConnectionEvent.OPENED:
 					node.status({ fill: 'blue', shape: 'dot', text: 'connected' });
-					node.log(`TCP з'єднання встановлено з ${node.host}:${node.port}`);
-					node.log('Відправка команди STARTDT...');
+					node.log(`TCP connection established with ${node.host}:${node.port}`);
+					node.log('Sending STARTDT command...');
 					node.connection.socket.write(node.connection.STARTDT_ACT_MSG);
 					break;
 				case Lib.prototype.ConnectionEvent.CLOSED:
 					node.status({ fill: 'red', shape: 'ring', text: 'disconnected' });
-					node.log(`З'єднання закрито.`);
+					node.log('Connection closed.');
 					clearGeneralInterrogationTimer();
 					break;
 				case Lib.prototype.ConnectionEvent.STARTDT_CON_RECEIVED:
 					node.status({ fill: 'green', shape: 'dot', text: 'data active' });
-					node.log('Отримано STARTDT_CON. Передача даних дозволена.');
+					node.log('STARTDT_CON received. Data transfer enabled.');
 					if (node.enableGeneralInterrogation) {
 						sendGeneralInterrogation('initial');
 						scheduleGeneralInterrogationTimer();
 					} else {
-						node.debug('Загальне опитування відключено в налаштуваннях.');
+						node.debug('General interrogation disabled in settings.');
 					}
 					break;
 				case Lib.prototype.ConnectionEvent.STOPDT_CON_RECEIVED:
 					node.status({ fill: 'yellow', shape: 'ring', text: 'stopped' });
-					node.log('Отримано STOPDT_CON. Передача даних зупинена.');
+					node.log('STOPDT_CON received. Data transfer stopped.');
 					break;
 			}
 		}
@@ -659,9 +659,9 @@ module.exports = function (RED) {
 			const isSpontaneous = asdu.Cot === Lib.prototype.CauseOfTransmission.SPONTANEOUS;
 			if (!node.allowSpontaneous && isSpontaneous) {
 				node.debug(
-					`Спонтанний ASDU (COT=${asdu.Cot}, CA=${
+					`Spontaneous ASDU (COT=${asdu.Cot}, CA=${
 						asdu.ca ?? asdu.Ca ?? 'N/A'
-					}) проігноровано через налаштування.`
+					}) ignored due to settings.`
 				);
 				if (asdu.Cot !== Lib.prototype.CauseOfTransmission.ACTIVATION_CON) {
 					sendCorrectSFrame(node.connection, node);
@@ -718,7 +718,7 @@ module.exports = function (RED) {
 						timestamp: element.Timestamp ? element.Timestamp.ToString() : null,
 					});
 				} catch (e) {
-					node.error(`Помилка розбору елемента: ${e.message}`, { asdu: asdu });
+					node.error(`Error parsing element: ${e.message}`, { asdu: asdu });
 				}
 			}
 
@@ -730,7 +730,7 @@ module.exports = function (RED) {
 		}
 
 		function startConnection() {
-			node.log(`Спроба підключення до ${node.host}:${node.port}...`);
+			node.log(`Attempting to connect to ${node.host}:${node.port}...`);
 			node.status({ fill: 'grey', shape: 'dot', text: 'connecting...' });
 
 			try {
@@ -747,7 +747,7 @@ module.exports = function (RED) {
 
 				node.connection.Connect();
 			} catch (e) {
-				node.error(`Помилка при ініціалізації з'єднання: ${e.message}`);
+				node.error(`Connection initialization error: ${e.message}`);
 				node.status({ fill: 'red', shape: 'ring', text: 'connection error' });
 			}
 		}
@@ -755,7 +755,7 @@ module.exports = function (RED) {
 		startConnection();
 
 		node.on('close', function (done) {
-			node.log("Закриття з'єднання IEC 104...");
+			node.log('Closing IEC 104 connection...');
 			clearGeneralInterrogationTimer();
 			if (node.connection && node.connection.socket) {
 				node.connection.SetReconnect(false);

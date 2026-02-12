@@ -54,7 +54,7 @@
 			id="node-input-allowSpontaneous"
 			style="width: auto; margin-left: 10px;"
 		/>
-		<p class="form-tips">Коли вимкнено, спонтанні ASDUs ігноруються (але підтверджуються).</p>
+		<p class="form-tips">When disabled, spontaneous ASDUs are ignored (but acknowledged).</p>
 	</div>
 	<div class="form-row">
 		<label for="node-input-enableGeneralInterrogation"
@@ -65,7 +65,7 @@
 			id="node-input-enableGeneralInterrogation"
 			style="width: auto; margin-left: 10px;"
 		/>
-		<p class="form-tips">Зніміть позначку, щоб відключити автоматичне опитування.</p>
+		<p class="form-tips">Uncheck to disable automatic interrogation.</p>
 	</div>
 	<div class="form-row">
 		<label for="node-input-pollingInterval"
@@ -78,37 +78,34 @@
 			placeholder="60"
 			style="width: 120px;"
 		/>
-		<p class="form-tips">0 = лише початкове опитування після встановлення зв'язку.</p>
+		<p class="form-tips">0 = only the initial interrogation after the connection is established.</p>
 	</div>
 </script>
 
 <script type="text/html" data-help-name="iec104-client">
 	<p>A client (master) node for the IEC 60870-5-104 protocol.</p>
 	<p>
-		Ця нода підключається до сервера IEC 104 (Slave/RTU) та приймає дані. Вона автоматично надсилає
-		команду Загального опитування (General Interrogation, COT 6, QOI 20) після встановлення
-		з'єднання та коректно обробляє підтвердження потоку даних (S-Frames).
+		This node connects to an IEC 104 server (Slave/RTU) and receives data. It automatically sends
+		a General Interrogation (COT 6, QOI 20) after the connection is established and correctly
+		handles acknowledgements of the data stream (S-Frames).
 	</p>
 	<h3>Configuration</h3>
 	<dl class="message-properties">
 		<dt>Host <span class="property-type">string</span></dt>
-		<dd>IP-адреса або ім'я хоста сервера IEC 104.</dd>
+		<dd>IP address or host name of the IEC 104 server.</dd>
 		<dt>Port <span class="property-type">number</span></dt>
-		<dd>TCP-порт сервера (за замовчуванням: 2404).</dd>
+		<dd>Server TCP port (default: 2404).</dd>
 		<dt>Common Address (CA) <span class="property-type">number</span></dt>
-		<dd>Загальна адреса ASDU (Common Address), з якої очікуються дані (за замовчуванням: 1).</dd>
+		<dd>Common Address of the ASDU from which data are expected (default: 1).</dd>
 		<dt>Allow spontaneous data <span class="property-type">boolean</span></dt>
-		<dd>
-			Disable this to ігнорувати спонтанні (COT=3) повідомлення і залишити тільки відповіді на
-			опитування.
-		</dd>
+		<dd>Disable this to ignore spontaneous (COT=3) messages and keep only responses to interrogation.</dd>
 		<dt>General interrogation (COT 20) <span class="property-type">boolean</span></dt>
-		<dd>Керує надсиланням запитів загального опитування після встановлення з'єднання.</dd>
+		<dd>Controls sending general interrogation requests after the connection is established.</dd>
 		<dt>Interrogation interval <span class="property-type">number</span></dt>
-		<dd>Період повторних опитувань у секундах. 0 означає лише початковий запит.</dd>
+		<dd>Period of repeated interrogations in seconds. 0 means only the initial request.</dd>
 	</dl>
 	<h3>Output</h3>
-	<dd>Загальна адреса ASDU (Common Address), з якої очікуються дані (за замовчуванням: 1).</dd>
+	<dd>Common Address of the ASDU from which data are expected (default: 1).</dd>
 	<pre>
 {
   "typeId": 30,
